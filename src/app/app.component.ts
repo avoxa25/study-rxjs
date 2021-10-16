@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { BehaviorSubject, Observable, Subject, of, ReplaySubject, interval } from 'rxjs';
-import { map, take, filter } from 'rxjs/operators';
+import { map, take, filter, mergeMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -16,6 +16,8 @@ export class AppComponent {
   private behaviorSubject$?: BehaviorSubject<number>;
   private replaySubject$?: ReplaySubject<number>;
   private observable2$: Observable<number> = new Observable();
+  private numbers$: Observable<number> = interval(1000);
+  private letters$: Observable<string> = of('a', 'b', 'c', 'd', 'e')
 
   constructor() {
     this.observable$ = of(1, 2, 3);;
@@ -53,13 +55,20 @@ export class AppComponent {
     this.replaySubject$.next(3);
     this.replaySubject$.subscribe(value => console.log('replaySubject', value));
 
-    this.observable2$ = interval(1000)
+    this.observable2$ = interval(1000);
     this.observable2$
       .pipe(
         take(10),
         map(value => value * 10),
         filter(value => value > 20)
-        ).subscribe(value => console.log('observable2, operators', value))
+      ).subscribe(value => console.log('observable2, operators', value));
+
+    this.letters$.pipe(
+      mergeMap(letter => this.numbers$.pipe(
+        take(5),
+        map(number => letter + number)
+      ))
+    ).subscribe(value => console.log('mergeMap', value))
   }
 
   ngOnDestroy() {
