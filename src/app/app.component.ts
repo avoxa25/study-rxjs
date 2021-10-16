@@ -64,10 +64,11 @@ export class AppComponent {
       ).subscribe(value => console.log('observable2, operators', value));
 
     this.letters$.pipe(
-      mergeMap(letter => this.numbers$.pipe(
-        take(5),
-        map(number => letter + number)
-      ))
+      mergeMap(letter => this.numbers$
+        .pipe(
+          take(5),
+          map(number => letter + number)
+        ))
     ).subscribe(value => console.log('mergeMap', value))
   }
 
