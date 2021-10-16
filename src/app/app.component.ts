@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { BehaviorSubject, Observable, Subject, of } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, of, ReplaySubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Component({
@@ -13,7 +13,8 @@ export class AppComponent {
   private observable$: Observable<number>;
   private subject$: Subject<number>;
   private subject2$?: Subject<number>;
-  private behaviorSubject$?: Subject<number>;
+  private behaviorSubject$?: BehaviorSubject<number>;
+  private replaySubject$?: ReplaySubject<number>
 
   constructor() {
     this.observable$ = of(1, 2, 3);;
@@ -45,12 +46,19 @@ export class AppComponent {
     this.behaviorSubject$.subscribe(value => console.log('behaviorSubject, second subscribe ', value));
     this.behaviorSubject$.next(3);
 
+    this.replaySubject$ = new ReplaySubject();
+    this.replaySubject$.next(1);
+    this.replaySubject$.next(2);
+    this.replaySubject$.next(3);
+    this.replaySubject$.subscribe(value => console.log('replaySubject', value))
+
   }
 
   ngOnDestroy() {
     this.subject$.unsubscribe();
     this.subject2$?.unsubscribe();
     this.behaviorSubject$?.unsubscribe();
+    this.replaySubject$?.unsubscribe();
   }
 
 
