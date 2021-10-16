@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { BehaviorSubject, Observable, Subject, of, ReplaySubject } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { BehaviorSubject, Observable, Subject, of, ReplaySubject, interval } from 'rxjs';
+import { map, take, filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -14,7 +14,8 @@ export class AppComponent {
   private subject$: Subject<number>;
   private subject2$?: Subject<number>;
   private behaviorSubject$?: BehaviorSubject<number>;
-  private replaySubject$?: ReplaySubject<number>
+  private replaySubject$?: ReplaySubject<number>;
+  private observable2$: Observable<number> = new Observable();
 
   constructor() {
     this.observable$ = of(1, 2, 3);;
@@ -50,8 +51,15 @@ export class AppComponent {
     this.replaySubject$.next(1);
     this.replaySubject$.next(2);
     this.replaySubject$.next(3);
-    this.replaySubject$.subscribe(value => console.log('replaySubject', value))
+    this.replaySubject$.subscribe(value => console.log('replaySubject', value));
 
+    this.observable2$ = interval(1000)
+    this.observable2$
+      .pipe(
+        take(10),
+        map(value => value * 10),
+        filter(value => value > 20)
+        ).subscribe(value => console.log('observable2, operators', value))
   }
 
   ngOnDestroy() {
