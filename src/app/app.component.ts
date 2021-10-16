@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { BehaviorSubject, Observable, Subject, of, ReplaySubject, interval } from 'rxjs';
-import { map, take, filter, mergeMap } from 'rxjs/operators';
+import { map, take, filter, mergeMap, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -17,7 +17,7 @@ export class AppComponent {
   private replaySubject$?: ReplaySubject<number>;
   private observable2$: Observable<number> = new Observable();
   private numbers$: Observable<number> = interval(1000);
-  private letters$: Observable<string> = of('a', 'b', 'c', 'd', 'e')
+  private letters$: Observable<string> = of('a', 'b', 'c', 'd', 'e');
 
   constructor() {
     this.observable$ = of(1, 2, 3);;
@@ -69,7 +69,17 @@ export class AppComponent {
           take(5),
           map(number => letter + number)
         ))
-    ).subscribe(value => console.log('mergeMap', value))
+    ).subscribe(value => console.log('mergeMap', value));
+
+    this.letters$.pipe(
+      switchMap(letter => this.numbers$
+        .pipe(
+          take(5),
+          map(number => letter + number)
+        ))
+    ).subscribe(value => console.log('switchMap', value));
+
+
   }
 
   ngOnDestroy() {
